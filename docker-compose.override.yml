@@ -2,19 +2,27 @@ version: '3.8'
 
 services:
   mongo:
+    image: mongo:latest
     ports:
       - "27017:27017"
     volumes:
       - ./mongo-data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
 
   redis:
+    image: redis:alpine
     ports:
       - "6379:6379"
     volumes:
       - ./redis-data:/data
+    command: redis-server --appendonly yes
 
   ml-service:
-    build: ./ml-service
+    build:
+      context: ./ml-service
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     volumes:
@@ -23,7 +31,9 @@ services:
       - PYTHONUNBUFFERED=1
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
       - "5000:5000"
     volumes:
@@ -39,7 +49,9 @@ services:
       - NEWS_API_KEY=demo
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     volumes:
